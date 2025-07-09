@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subtype classification assistance tool for newly certified individuals requiring long-term care (SAT-LTC) 新規要介護認定者のサブタイプ判定補助ツール </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col text-start fs-4">
+                    新規要介護認定者のサブタイプ判定補助ツール
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-start fs-4">
+                    Subtype classification assistance tool for newly certified individuals requiring long-term care (SAT-LTC)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-start fs-6">
+                    <div>＜はじめにお読みください＞</div>
+                    <div>
+                        本ツールは、筑波大学医学医療系へルスサービスリサーチ分野およびデジタルヘルス分野が実施した研究（doi: 10.1016/j.jamda.2025.105589）の内容に基づいて、介護保険サービスを利用し始めた高齢者（65歳以上の新規要介護認定者）の方の心身機能等のパターンから、いくつかの特徴的なグループ（サブタイプ）への分類傾向を算出するものです。
+                    </div>
+                    <div>
+                        詳しくは、<a class="link-opacity-100-hover" href="https://github.com/pubhm/ltcsubtypes">Github リポジトリ</a>の「本ウェブサイトについて（概要・留意事項）」をご覧ください。
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-start fs-6">
+                    <div>&ltPlease read first&gt</div>
+                    <div>
+                        This tool is developed based on research conducted by the Department of Health Services Research and Digital Health at the Institute of Medicine, University of Tsukuba (doi: 10.1016/j.jamda.2025.105589). By inputting the presence or absence of 74 items, this tool promptly suggests the most likely subtype for older adults aged 65 and over who have started using long-term care insurance services.
+                    </div>
+                    <div>
+                        For details, please see the "About this website (overview and Notes)" section in the <a class="link-opacity-100-hover" href="https://github.com/pubhm/ltcsubtypes">Github repository</a>.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <div class="container content my-1">
+                <div class="form-container" id="form-container">
+                </div>
+                <div class="form-container mt-3 fs-1" name="resultField">
+                    <div class="my-1">
+                        <button type="button" class="btn btn-primary" id="calcBtn">計算 Calculate</button>
+                    </div>
+                    <div class="alert alert-primary" role="status">
+                        <div id="resultField"></div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-secondary" id="resetBtn">リセット Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col text-start">
+                    <div>
+                        <p>このウェブサイトは MIT License のもとで公開されている <a href="https://getbootstrap.jp/">Bootstrap</a>フレームワークを利用しています。</p>
+                    </div>
+                </div>
+                <div class="col text-end">
+                    <div>Contact: <a class="link-opacity-100-hover" href="https://github.com/pubhm/ltcsubtypes/issues">Github issues</a></div>
+                    <div>Citation: <a class="link-opacity-100-hover" href="https://doi.org/10.1016/j.jamda.2025.105589"> doi:10.1016/j.jamda.2025.105589</a></div>
+                    <div>&copy; 2025 University of Tsukuba, Institute of Medicine, Department of Health Services Research and Department of Digital Health. All rights reserved.</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const names = [
+            "左上肢の麻痺：ない", "右上肢の麻痺：ない", "左下肢の麻痺：ない", "右下肢の麻痺：ない", "その他の麻痺（四肢の欠損）：ない", "肩関節の拘縮：ない", "股関節の拘縮：ない", "膝関節の拘縮：ない", "その他の拘縮（四肢の欠損）：ない", "寝返り：できる・つかまれば可", "起き上がり：できる・つかまれば可", "座位保持：できる・自分で支えれば可", "両足での立位保持：できる", "歩行：できる・つかまれば可", "立ち上がり：できる・つかまれば可", "片足での立位：できる", "洗身：介助されていない", "つめ切り：介助されていない", "視力：普通", "聴力：普通", "移乗：介助されていない", "移動：介助されていない", "えん下：できる", "食事摂取：介助されていない", "排尿：介助されていない", "排便：介助されていない", "口腔清潔：介助されていない", "洗顔：介助されていない", "整髪：介助されていない", "上衣の着脱：介助されていない", "ズボン等の着脱：介助されていない", "外出頻度：週1回以上", "意思の伝達：できる", "毎日の日課を理解：できる", "生年月日や年齢を言う：できる", "短期記憶：できる", "自分の名前を言う：できる", "今の季節を理解する：できる", "場所の理解：できる", "徘徊：ない", "外出すると戻れない：ない", "物を盗られたなどと被害的になる：ない", "作話：ない", "泣いたり、笑ったりして感情が不安定になる：ない", "昼夜の逆転がある：ない", "しつこく同じ話をする：ない", "大声をだす：ない", "介護に抵抗する：ない", "「家に帰る」等と言い落ち着きがない：ない", "一人で外に出たがり目が離せない：ない", "いろいろなものを集めたり、無断でもってくる：ない", "物を壊したり、衣類を破いたりする：ない", "ひどい物忘れ：ない", "意味もなく独り言や独り笑いをする：ない", "自分勝手に行動する：ない", "話がまとまらず、会話にならない：ない", "薬の内服：介助されていない", "金銭の管理：介助されていない", "日常の意思決定：できる・特別な場合を除いてできる", "集団への不適応：ない", "買い物：介助されていない", "簡単な調理：介助されていない", "点滴の管理：ない", "中心静脈栄養：ない", "透析：ない", "ストーマ（人工肛門）の処置：ない", "酸素療法：ない", "レスピレーター（人工呼吸器）：ない", "気管切開の処置：ない", "疼痛の看護：ない", "経管栄養：ない", "モニター測定（血圧、心拍、酸素飽和度等）：ない", "じょくそうの処置：ない", "カテーテル（コンドームカテーテル、留置カテーテル、ウロストーマ等）：ない"]
+        const names_en = [
+            "Paralysis (left-upper limb): None", "Paralysis (right-upper limb): None", "Paralysis (left-lower limb): None", "Paralysis (right-lower limb): None", "Paralysis (others): None", "Contracture (shoulder joint): None", "Contracture (hip joint): None", "Contracture (knee joint): None", "Contractures (others): None", "Turning over in bed: Able to do independently; possible by holding onto something", "Sitting up from a lying position: Able to do independently; possible by holding onto something", "Maintaining sitting position: Able to do independently; possible by holding onto something", "Maintaining standing position: Able to do independently", "Walking: Able to do independently; possible by holding onto something", "Standing up from a sitting position: Able to do independently; possible by holding onto something", "Single leg standing: Able to do independently", "Washing the whole body: No assistance required", "Trimming nails: No assistance required", "Vision: Normal", "Hearing: Normal", "Transferring: No assistance required", "Moving: No assistance required", "Swallowing: Able to do independently", "Eating: No assistance required", "Toileting hygiene (urination): No assistance required", "Toileting hygiene (defecation): No assistance required", "Oral Hygiene: No assistance required", "Washing face: No assistance required", "Combing/Styling hair: No assistance required", "Upper-body dressing: No assistance required", "Lower-body dressing: No assistance required", "Frequency of going out: At least once a week", "Expressing ideas and wants: Able to do independently", "Understand daily routines: Able to do independently", "Remembering the date of birth: Able to do independently", "Short-term memory: Able to do independently", "Remembering own name: Able to do independently", "Recognizing the current season: Able to do independently", "Place recognition: Able to do independently", "Wandering: None", "Getting lost: None", "Paranoid or persecutory delusions: None", "Confabulation: None", "Emotional lability: None", "Day-night reversal: None", "Repeating sentences or questions : None", "Screaming/shouting: None", "Resisting care: None", "Restlessness with a desire to go home: None", "Showing exit-seeking behavior: None", "Hoarding things: None", "Tearing things or destroying property: None", "Forgetfulness: None", "Muttering or laughing to oneself: None", "Acting impulsively or selfishly: None", "Incoherent speech: None", "Taking medications: No assistance required", "Managing money: No assistance required", "Daily decision making: Able to do independently, or possible except in special cases", "Maladaptation to groups: None", "Shopping: No assistance required", "Cooking: No assistance required", "Intravenous drip: None", "Intravenous hyperalimentation: None", "Dialysis: None", "Care for ostomy: None", "Oxygen therapy: None", "Mechanical ventilator: None", "Care for tracheostomy: None", "Pain care: None", "Tube feeding: None", "Monitoring  (such as blood pressure, heart rate, oxygen saturation): None", "Pressure ulcer care: None", "Incontinence care  (such as condom catheter, indwelling catheter, urostoma): None"
+        ]
+        const Ps = [0.3414, 0.2632, 0.1833, 0.1488, 0.0633]
+        const pSequences = [
+            [0.1126, 0.1382, 0.3486, 0.3575, 0.1961, 0.1208, 0.0213, 0.1483, 0.1827, 0.1296, 0.0445, 0.2641, 0.6670, 0.1604, 0.0144, 0.9880, 0.8125, 0.7734, 0.2150, 0.5565, 0.2864, 0.4857, 0.1618, 0.0663, 0.2288, 0.1599, 0.2068, 0.1995, 0.1376, 0.4122, 0.4624, 0.6122, 0.0809, 0.0069, 0.0058, 0.1151, 0.0000, 0.0335, 0.0004, 0.0013, 0.0035, 0.0234, 0.0408, 0.0957, 0.0156, 0.1439, 0.0241, 0.0121, 0.0023, 0.0027, 0.0028, 0.0022, 0.1932, 0.0300, 0.0481, 0.0477, 0.7240, 0.6557, 0.0236, 0.0024, 0.9587, 0.8637, 0.0315, 0.0025, 0.0258, 0.0123, 0.0255, 0.0038, 0.0032, 0.0072, 0.0035, 0.0053, 0.0084, 0.0197],
+            [0.0175, 0.0190, 0.0636, 0.0673, 0.0625, 0.0214, 0.0018, 0.0555, 0.0649, 0.0552, 0.0017, 0.0897, 0.1612, 0.0087, 0.0007, 0.7181, 0.2564, 0.2497, 0.1475, 0.5164, 0.0449, 0.1370, 0.1119, 0.0351, 0.1617, 0.0861, 0.0537, 0.0135, 0.0126, 0.0604, 0.0527, 0.3258, 0.1917, 0.0973, 0.0131, 0.6100, 0.0027, 0.1627, 0.0033, 0.0400, 0.0415, 0.2581, 0.3507, 0.3341, 0.1010, 0.6034, 0.1682, 0.0551, 0.0325, 0.0638, 0.0411, 0.0314, 0.6767, 0.1467, 0.1881, 0.2514, 0.7980, 0.7224, 0.1895, 0.0120, 0.8598, 0.6972, 0.0091, 0.0000, 0.0060, 0.0029, 0.0036, 0.0009, 0.0000, 0.0000, 0.0008, 0.0000, 0.0009, 0.0021],
+            [0.1858, 0.1692, 0.5223, 0.5304, 0.2273, 0.1217, 0.0194, 0.1750, 0.1889, 0.2053, 0.4081, 0.5853, 0.9324, 0.6804, 0.3910, 1.0000, 0.9955, 0.9804, 0.1949, 0.5084, 0.8546, 0.9529, 0.1381, 0.1311, 0.8706, 0.8734, 0.9018, 0.8953, 0.7446, 0.9366, 0.9887, 0.8926, 0.1200, 0.0511, 0.0082, 0.1023, 0.0008, 0.0699, 0.0031, 0.0016, 0.0095, 0.0264, 0.0610, 0.0736, 0.0154, 0.1025, 0.0346, 0.0072, 0.0105, 0.0029, 0.0018, 0.0000, 0.0904, 0.0173, 0.0772, 0.0364, 0.9423, 0.8541, 0.1000, 0.0016, 0.9992, 0.9884, 0.0600, 0.0066, 0.0385, 0.0143, 0.0563, 0.0023, 0.0025, 0.0057, 0.0031, 0.0424, 0.0421, 0.0758],
+            [0.0334, 0.0609, 0.1661, 0.1628, 0.0661, 0.0332, 0.0085, 0.0875, 0.0955, 0.0723, 0.0229, 0.1650, 0.4091, 0.1068, 0.0208, 0.8895, 0.8528, 0.7823, 0.2277, 0.5272, 0.3203, 0.5922, 0.1538, 0.1406, 0.6370, 0.5131, 0.6331, 0.5821, 0.5342, 0.8204, 0.8330, 0.6478, 0.4165, 0.5656, 0.1448, 0.7353, 0.0188, 0.3912, 0.0889, 0.1699, 0.1657, 0.2563, 0.4024, 0.3495, 0.1896, 0.5145, 0.1863, 0.1515, 0.1834, 0.1595, 0.1007, 0.0420, 0.6543, 0.2405, 0.2652, 0.3991, 0.9850, 0.9758, 0.7028, 0.0231, 0.9940, 0.9491, 0.0175, 0.0000, 0.0097, 0.0058, 0.0186, 0.0000, 0.0013, 0.0000, 0.0015, 0.0108, 0.0013, 0.0125],
+            [0.4018, 0.4330, 0.6821, 0.7158, 0.2492, 0.1987, 0.0309, 0.2608, 0.2438, 0.5635, 0.7643, 0.8495, 0.9954, 0.9526, 0.8546, 1.0000, 1.0000, 0.9966, 0.3468, 0.5678, 0.9903, 0.9916, 0.5099, 0.6388, 1.0000, 0.9966, 1.0000, 1.0000, 0.9580, 0.9983, 1.0000, 0.9587, 0.7173, 0.8371, 0.4269, 0.8037, 0.1989, 0.6542, 0.3517, 0.0424, 0.0285, 0.0669, 0.1646, 0.2376, 0.1630, 0.2155, 0.1425, 0.1399, 0.0966, 0.0146, 0.0205, 0.0191, 0.1936, 0.1881, 0.1866, 0.2426, 0.9966, 0.9936, 0.8689, 0.0289, 0.9966, 0.8085, 0.1256, 0.0083, 0.0063, 0.0137, 0.0483, 0.0068, 0.0205, 0.0099, 0.2189, 0.0733, 0.1073, 0.1500]
+        ]
+        const display_class_names = ["軽度身体タイプ mild physical subtype", "軽度認知タイプ mild cognitive subtype", "中等度身体タイプ moderate physical subtype", "中等度複合タイプ moderate multicomponent subtype", "重度複合タイプ severe multicomponent subtype"]
+
+
+        const formContainer = document.getElementById('form-container');
+
+
+
+        const manDescText = document.createElement('p');
+        manDescText.textContent = "選択後、計算ボタンを押して下さい Select Yes or No, and then click Calculate."
+        formContainer.appendChild(manDescText);
+
+        if (names.length !== pSequences[0].length) {
+            const errorText = document.createElement('p');
+            errorText.textContent = `names と pSequences の要素の長さの不一致: ${names.length} vs ${pSequences[0].length}`;
+            formContainer.appendChild(errorText);
+            throw new Error(`names と pSequence の長さの不一致: ${names.length} vs ${pSequences[0].length}`);
+        }
+
+
+        names.forEach((label, i) => {
+            const div = document.createElement('div');
+            div.className = "mb-3";
+
+            // Yes
+            const yesDivInline = document.createElement('div');
+            const yesLabel = document.createElement('label');
+            const yesInput = document.createElement('input');
+            yesInput.checked = true; // Yes が初期値
+            yesInput.className = "form-check-input";
+            yesInput.type = 'radio';
+            yesInput.name = `Q${i}`;
+            yesInput.value = 0;
+            yesLabel.appendChild(yesInput);
+            yesLabel.appendChild(document.createTextNode('Yes'));
+            yesLabel.className = "form-check-label";
+            yesDivInline.appendChild(yesLabel);
+            yesDivInline.className = "form-check form-check-inline";
+
+            div.appendChild(yesDivInline);
+
+            // No
+            const noDivInline = document.createElement('div');
+            const noLabel = document.createElement('label');
+            const noInput = document.createElement('input');
+            noInput.className = "form-check-input";
+            noInput.type = 'radio';
+            noInput.name = `Q${i}`;
+            noInput.value = 1;
+            noLabel.appendChild(noInput);
+            noLabel.appendChild(document.createTextNode('No'));
+            noLabel.className = "form-check-label";
+            noDivInline.appendChild(noLabel);
+            noDivInline.className = "form-check form-check-inline";
+
+            div.appendChild(noDivInline);
+
+            const fieldset = document.createElement('fieldset');
+            fieldset.className = "mb-1 border border-1 rounded border-dark px-2"
+            const labelText = document.createElement('legend');
+            labelText.className = "float-none w-auto fs-6"
+            labelText.textContent = `${i+1}. ${label}. ${names_en[i]}`;
+            fieldset.appendChild(labelText);
+
+
+            // 中見出し
+            const divMHeading = document.createElement('div');
+            divMHeading.className = "mt-3"
+            const headingText = document.createElement('h4');
+            if (label === "左上肢の麻痺：ない"){
+                headingText.textContent = "身体機能・起居動作 Body function/Bed mobility"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+            } else if (label === "移乗：介助されていない") {
+                headingText.textContent = "生活機能 Activities of daily living"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+
+            }else if (label === "意思の伝達：できる") {
+                headingText.textContent = "認知機能 Cognitive function"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+
+            }else if (label === "物を盗られたなどと被害的になる：ない") {
+                headingText.textContent = "精神・行動障害 Behavioral problems (behavioral and psychological symptoms)"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+
+            }else if (label === "薬の内服：介助されていない") {
+                headingText.textContent = "社会生活への適応 Instrumental activities of daily living"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+
+            }else if (label === "点滴の管理：ない") {
+                headingText.textContent = "必要な医療処置等 Medical procedures"
+                divMHeading.append(headingText)
+                formContainer.append(divMHeading)
+
+            }
+
+            fieldset.appendChild(div);
+
+            formContainer.appendChild(fieldset);
+        });
+
+        // 計算処理
+        const calcBtn = document.getElementById('calcBtn');
+        calcBtn.addEventListener('click', () => {
+            let products = [];
+            let uncheckedNumbers = new Set();
+
+            for (let j = 0; j < pSequences.length; j++) {
+                const pSequence = pSequences[j];
+                let product = 1;
+                for (let i = 0; i < names.length; i++) {
+                    const selected = document.querySelector(`input[name="Q${i}"]:checked`);
+
+                    if (!selected) {
+                        uncheckedNumbers.add(i);
+                        break;
+                    } else {
+                        if (selected.value == 1) {  // No
+                            product *= pSequence[i];
+                        } else {  // Yes
+                            product *= (1 - pSequence[i]);
+                        }
+                    }
+                }
+                products.push(product);
+            }
+
+            if (uncheckedNumbers.size > 0) {
+                let alertText = "";
+                for (let i = 0; i < names.length; i++) {
+                    if (uncheckedNumbers.has(i)) {
+                        alertText += `${names[i]}\n`;
+                    }
+                }
+                document.getElementById('resultField').textContent = `未回答の質問があります\n${alertText}`;
+            } else {
+                if (products.length !== Ps.length) {
+                    throw new Error("配列長");
+                }
+                const probsP = products.map((val, i) => val * Ps[i]);
+                const sumProbsP = probsP.reduce((acc, val) => acc + val, 0);
+                const pp = probsP.map((val) => val / sumProbsP);
+
+                const max_pp = Math.max(...pp);
+                const maxIndex = pp.indexOf(max_pp);
+
+                document.getElementById('resultField').textContent = `${display_class_names[maxIndex]}`;
+            }
+        });
+
+        /* resetボタンの処理 */
+        const resetBtn = document.getElementById('resetBtn');
+        resetBtn.addEventListener('click', () => {
+            for (const element of document.querySelectorAll('input[type="radio"]')) {
+                if (element.value == 0) {
+                    element.checked = true;
+                } else {
+                    element.checked = false;
+                }
+            }
+            document.getElementById("resultField").textContent = "";
+        });
+
+    </script>
+</body>
+
+</html>
